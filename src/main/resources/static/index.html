@@ -51,6 +51,11 @@
     font-size: 12px;
     margin-top: 2px;
   }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
   .client-switch {
     display: flex;
     align-items: center;
@@ -77,6 +82,19 @@
   }
   .chip:hover { border-color: var(--accent); color: var(--text); }
   .chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  .icon-btn {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    color: var(--text-dim);
+    padding: 7px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all .15s;
+    white-space: nowrap;
+  }
+  .icon-btn:hover { border-color: var(--accent); color: var(--text); }
 
   main {
     display: grid;
@@ -195,6 +213,8 @@
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.4px;
+    cursor: help;
+    border-bottom-style: dashed;
   }
   tbody td {
     padding: 9px 10px;
@@ -214,6 +234,7 @@
     font-weight: 700;
     letter-spacing: 0.3px;
     display: inline-block;
+    cursor: help;
   }
   .status-badge.NEW { background: rgba(122,129,149,0.2); color: var(--text-dim); }
   .status-badge.ACCEPTED { background: rgba(59,130,246,0.18); color: var(--accent); }
@@ -252,7 +273,7 @@
   .log-line.SENT .tag { color: var(--accent); }
   .log-line.RECEIVED .tag { color: var(--warn); }
   .log-line .ts { color: var(--text-dim); margin-right: 8px; }
-  .log-line .msgtype { color: #9aa4bd; margin-right: 8px; }
+  .log-line .msgtype { color: #9aa4bd; margin-right: 8px; cursor: help; border-bottom: 1px dotted #9aa4bd; }
 
   ::-webkit-scrollbar { width: 8px; height: 8px; }
   ::-webkit-scrollbar-thumb { background: #262c3d; border-radius: 4px; }
@@ -264,6 +285,141 @@
     font-size: 11px;
     padding: 10px 0 24px;
   }
+
+  /* ── 초보자용 마우스오버 툴팁 ─────────────────────────── */
+  [data-tip] { cursor: help; }
+  .tooltip-bubble {
+    position: fixed;
+    z-index: 9999;
+    max-width: 260px;
+    background: #1c2233;
+    border: 1px solid #35406099;
+    color: var(--text);
+    font-size: 12px;
+    line-height: 1.5;
+    padding: 9px 12px;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .12s ease;
+  }
+  .tooltip-bubble.show { opacity: 1; }
+
+  /* ── 처음 화면 안내 오버레이 ─────────────────────────── */
+  .onboarding-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(5,7,12,0.72);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 20px;
+  }
+  .onboarding-overlay.show { display: flex; }
+  .onboarding-card {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 14px;
+    padding: 26px 28px;
+    max-width: 440px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .onboarding-card h3 {
+    margin: 0 0 4px 0;
+    font-size: 17px;
+  }
+  .onboarding-card .desc {
+    color: var(--text-dim);
+    font-size: 12.5px;
+    margin-bottom: 16px;
+  }
+  .onboarding-card ol {
+    margin: 0 0 20px 0;
+    padding-left: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 13px;
+  }
+  .onboarding-card ol li b { color: var(--accent); }
+  .onboarding-card .actions { display: flex; justify-content: flex-end; }
+  .onboarding-card .actions button {
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    padding: 9px 18px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .onboarding-card .actions button:hover { filter: brightness(1.1); }
+
+  /* ── 용어 사전 드로어 ─────────────────────────────────── */
+  .glossary-drawer {
+    position: fixed;
+    top: 0;
+    right: -420px;
+    width: 400px;
+    max-width: 92vw;
+    height: 100vh;
+    background: var(--panel);
+    border-left: 1px solid var(--panel-border);
+    box-shadow: -12px 0 40px rgba(0,0,0,0.45);
+    z-index: 10001;
+    transition: right .22s ease;
+    display: flex;
+    flex-direction: column;
+  }
+  .glossary-drawer.show { right: 0; }
+  .glossary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--panel-border);
+  }
+  .glossary-header h3 { margin: 0; font-size: 15px; }
+  .glossary-header button {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 18px;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .glossary-header button:hover { color: var(--text); }
+  .glossary-body { overflow-y: auto; padding: 14px 18px 30px; }
+  .glossary-group { margin-bottom: 20px; }
+  .glossary-group h4 {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--accent);
+    margin: 0 0 10px 0;
+  }
+  .glossary-item { margin-bottom: 10px; }
+  .glossary-item .term {
+    font-weight: 700;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 2px;
+  }
+  .glossary-item .def {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+  .glossary-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 10000;
+    display: none;
+  }
+  .glossary-backdrop.show { display: block; }
 </style>
 </head>
 <body>
@@ -273,10 +429,15 @@
     <h1><span class="dot"></span>Mock FIX Trading Terminal</h1>
     <div class="sub">FIX 4.4 (hand-rolled) · TCP Socket · In-memory Matching Engine</div>
   </div>
-  <div class="client-switch">
-    <div class="chip" data-client="TRADER-A">TRADER-A</div>
-    <div class="chip" data-client="TRADER-B">TRADER-B</div>
-    <input type="text" id="clientIdInput" value="TRADER-A" spellcheck="false">
+  <div class="header-right">
+    <button class="icon-btn" id="helpBtn">❓ 처음이신가요?</button>
+    <button class="icon-btn" id="glossaryToggle">📖 용어 사전</button>
+    <div class="client-switch">
+      <div class="chip" data-client="TRADER-A" data-tip="TRADER-A 계정으로 화면을 전환합니다. 여러 명의 트레이더를 동시에 시뮬레이션할 수 있어요.">TRADER-A</div>
+      <div class="chip" data-client="TRADER-B" data-tip="TRADER-B 계정으로 화면을 전환합니다.">TRADER-B</div>
+      <input type="text" id="clientIdInput" value="TRADER-A" spellcheck="false"
+             data-tip="원하는 이름을 직접 입력하면 새로운 가상 트레이더 계정을 만들 수 있어요.">
+    </div>
   </div>
 </header>
 
@@ -285,8 +446,8 @@
     <h2>주문 입력 <span id="clientLabel" style="color:var(--accent);font-weight:700;"></span></h2>
     <form class="order-form" id="orderForm">
       <div class="field">
-        <label>종목 (Symbol)</label>
-        <select id="symbol">
+        <label data-tip="거래하려는 주식 종목을 선택하세요. 이 예제는 5개 종목만 지원합니다.">종목 (Symbol)</label>
+        <select id="symbol" data-tip="거래하려는 주식 종목을 선택하세요.">
           <option>AAPL</option>
           <option>GOOG</option>
           <option>MSFT</option>
@@ -298,30 +459,37 @@
       <div class="field">
         <label>매수/매도 (Side)</label>
         <div class="side-toggle">
-          <div class="toggle-btn buy-active" data-side="BUY" id="btnBuy">BUY</div>
-          <div class="toggle-btn" data-side="SELL" id="btnSell">SELL</div>
+          <div class="toggle-btn buy-active" data-side="BUY" id="btnBuy"
+               data-tip="매수(BUY): 주식을 사는 주문이에요.">BUY</div>
+          <div class="toggle-btn" data-side="SELL" id="btnSell"
+               data-tip="매도(SELL): 주식을 파는 주문이에요.">SELL</div>
         </div>
       </div>
 
       <div class="field">
         <label>주문 유형 (OrdType)</label>
         <div class="type-toggle">
-          <div class="toggle-btn type-active" data-type="LIMIT" id="btnLimit">LIMIT</div>
-          <div class="toggle-btn" data-type="MARKET" id="btnMarket">MARKET</div>
+          <div class="toggle-btn type-active" data-type="LIMIT" id="btnLimit"
+               data-tip="지정가(LIMIT): 내가 원하는 가격을 직접 정해서 주문해요. 그 가격 조건이 맞아야 체결돼요.">LIMIT</div>
+          <div class="toggle-btn" data-type="MARKET" id="btnMarket"
+               data-tip="시장가(MARKET): 가격을 정하지 않고, 지금 거래 가능한 가격에 즉시 체결을 시도해요.">MARKET</div>
         </div>
       </div>
 
       <div class="field" id="priceField">
-        <label>가격 (Price)</label>
-        <input type="number" id="price" step="0.01" min="0" value="150.00">
+        <label data-tip="지정가 주문일 때만 필요해요. 내가 사고(팔고) 싶은 가격이에요.">가격 (Price)</label>
+        <input type="number" id="price" step="0.01" min="0" value="150.00"
+               data-tip="지정가 주문일 때만 필요해요. 내가 사고(팔고) 싶은 가격이에요.">
       </div>
 
       <div class="field">
-        <label>수량 (Quantity)</label>
-        <input type="number" id="quantity" step="1" min="1" value="100">
+        <label data-tip="몇 주(株)를 거래할지 입력하세요.">수량 (Quantity)</label>
+        <input type="number" id="quantity" step="1" min="1" value="100"
+               data-tip="몇 주(株)를 거래할지 입력하세요.">
       </div>
 
-      <button type="submit" class="submit-btn" id="submitBtn">주문 전송 (New Order Single)</button>
+      <button type="submit" class="submit-btn" id="submitBtn"
+              data-tip="입력한 내용을 FIX 메시지(New Order Single, 35=D)로 만들어 거래소 서버에 TCP 소켓으로 전송해요.">주문 전송 (New Order Single)</button>
       <div class="flash" id="flash"></div>
     </form>
   </section>
@@ -334,16 +502,16 @@
     <table>
       <thead>
         <tr>
-          <th>ClOrdID</th>
-          <th>거래소 ID</th>
-          <th>종목</th>
-          <th>구분</th>
-          <th>유형</th>
-          <th>가격</th>
-          <th>수량</th>
-          <th>잔량</th>
-          <th>누적체결</th>
-          <th>상태</th>
+          <th data-tip="클라이언트가 주문마다 붙이는 고유 번호예요. 취소할 때도 이 번호로 어떤 주문인지 찾아요.">ClOrdID</th>
+          <th data-tip="서버(거래소)가 주문을 접수하면서 새로 부여하는 번호예요. 접수되기 전까지는 비어 있어요.">거래소 ID</th>
+          <th data-tip="거래 중인 주식 종목이에요.">종목</th>
+          <th data-tip="매수(BUY)인지 매도(SELL)인지를 나타내요.">구분</th>
+          <th data-tip="지정가(LIMIT)인지 시장가(MARKET)인지를 나타내요.">유형</th>
+          <th data-tip="주문한 가격이에요. 시장가 주문은 가격을 정하지 않아 '시장가'로 표시돼요.">가격</th>
+          <th data-tip="처음 주문했던 총 수량이에요.">수량</th>
+          <th data-tip="아직 체결되지 않고 남아 있는 수량이에요.">잔량</th>
+          <th data-tip="지금까지 실제로 체결된(거래가 성사된) 수량의 합이에요.">누적체결</th>
+          <th data-tip="주문이 지금 어떤 단계에 있는지를 나타내요. 각 상태에 마우스를 올려도 설명이 떠요.">상태</th>
           <th></th>
         </tr>
       </thead>
@@ -368,6 +536,63 @@
   학습용 Mock 거래 시스템 — 실제 FIX 표준의 세션 관리(Logon/Heartbeat/재전송)는 구현되어 있지 않습니다.
 </footer>
 
+<!-- 처음 방문 시 뜨는 안내 오버레이 -->
+<div class="onboarding-overlay" id="onboardingOverlay">
+  <div class="onboarding-card">
+    <h3>처음이신가요? 👋</h3>
+    <div class="desc">이 화면이 처음이라도 걱정하지 마세요. 아래 4단계만 알면 충분해요.</div>
+    <ol>
+      <li><b>①</b> 왼쪽에서 종목·매수/매도·가격·수량을 정해 <b>"주문 전송"</b>을 눌러보세요.</li>
+      <li><b>②</b> 오른쪽 <b>주문 목록</b>에서 내 주문 상태가 실시간으로 바뀌는 걸 확인하세요.</li>
+      <li><b>③</b> 아래 <b>FIX 메시지 로그</b>에서 실제로 오간 통신 내용을 볼 수 있어요.</li>
+      <li><b>④</b> 궁금한 용어나 버튼 위에 <b>마우스를 올리면</b> 설명이 떠요. 오른쪽 위 "용어 사전"도 참고하세요!</li>
+    </ol>
+    <div class="actions">
+      <button id="onboardingCloseBtn">시작하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 용어 사전 드로어 -->
+<div class="glossary-backdrop" id="glossaryBackdrop"></div>
+<div class="glossary-drawer" id="glossaryDrawer">
+  <div class="glossary-header">
+    <h3>📖 용어 사전</h3>
+    <button id="glossaryCloseBtn">✕</button>
+  </div>
+  <div class="glossary-body">
+    <div class="glossary-group">
+      <h4>주식 기본 용어</h4>
+      <div class="glossary-item"><span class="term">매수 (BUY)</span><span class="def">주식을 사는 것.</span></div>
+      <div class="glossary-item"><span class="term">매도 (SELL)</span><span class="def">주식을 파는 것.</span></div>
+      <div class="glossary-item"><span class="term">지정가 (LIMIT)</span><span class="def">내가 원하는 가격을 직접 정해서 주문하는 방식. 그 가격 조건이 맞아야 체결돼요.</span></div>
+      <div class="glossary-item"><span class="term">시장가 (MARKET)</span><span class="def">가격을 정하지 않고, 지금 거래 가능한 가격에 즉시 체결을 시도하는 방식.</span></div>
+      <div class="glossary-item"><span class="term">체결 (Fill)</span><span class="def">매수 주문과 매도 주문의 조건이 맞아 실제로 거래가 성사되는 것.</span></div>
+      <div class="glossary-item"><span class="term">잔량</span><span class="def">주문 수량 중 아직 체결되지 않고 남은 수량.</span></div>
+      <div class="glossary-item"><span class="term">누적체결수량</span><span class="def">지금까지 체결된 수량을 모두 더한 값.</span></div>
+    </div>
+    <div class="glossary-group">
+      <h4>주문 상태</h4>
+      <div class="glossary-item"><span class="term">NEW</span><span class="def">주문을 만들었지만 아직 서버에 접수되지 않은 상태.</span></div>
+      <div class="glossary-item"><span class="term">ACCEPTED</span><span class="def">서버가 검증을 통과시키고 주문을 정상적으로 접수한 상태.</span></div>
+      <div class="glossary-item"><span class="term">PARTIALLY_FILLED</span><span class="def">주문 수량 중 일부만 체결된 상태.</span></div>
+      <div class="glossary-item"><span class="term">FILLED</span><span class="def">주문 수량이 전부 체결된 상태.</span></div>
+      <div class="glossary-item"><span class="term">REJECTED</span><span class="def">서버가 검증에 실패해 주문을 거부한 상태.</span></div>
+      <div class="glossary-item"><span class="term">CANCELLED</span><span class="def">주문이 취소된 상태.</span></div>
+    </div>
+    <div class="glossary-group">
+      <h4>FIX 프로토콜 용어</h4>
+      <div class="glossary-item"><span class="term">FIX</span><span class="def">전 세계 금융시장에서 주문·체결 정보를 주고받을 때 쓰는 표준 통신 규격.</span></div>
+      <div class="glossary-item"><span class="term">ClOrdID</span><span class="def">클라이언트가 주문마다 붙이는 고유 번호.</span></div>
+      <div class="glossary-item"><span class="term">거래소 주문번호 (OrderID)</span><span class="def">서버가 주문을 접수하면서 새로 부여하는 번호.</span></div>
+      <div class="glossary-item"><span class="term">New Order Single (35=D)</span><span class="def">신규 주문을 접수해 달라는 요청 메시지.</span></div>
+      <div class="glossary-item"><span class="term">Execution Report (35=8)</span><span class="def">주문 접수·거부·체결 결과를 알려주는 메시지. 이 예제에서는 세 가지 경우 모두 이 메시지 하나로 표현해요.</span></div>
+      <div class="glossary-item"><span class="term">Order Cancel Request (35=F)</span><span class="def">기존 주문의 취소를 요청하는 메시지.</span></div>
+      <div class="glossary-item"><span class="term">SENT / RECEIVED</span><span class="def">이 화면 기준으로 클라이언트가 서버에 보낸 메시지(SENT)인지, 서버로부터 받은 메시지(RECEIVED)인지를 나타내요.</span></div>
+    </div>
+  </div>
+</div>
+
 <script>
 (function () {
   const state = {
@@ -382,6 +607,68 @@
   const clientLabel = $('#clientLabel');
   const priceField = $('#priceField');
   const flash = $('#flash');
+
+  // ── 초보자용 마우스오버 툴팁 ─────────────────────────────
+  const tooltipEl = document.createElement('div');
+  tooltipEl.className = 'tooltip-bubble';
+  document.body.appendChild(tooltipEl);
+
+  function positionTooltip(target) {
+    const rect = target.getBoundingClientRect();
+    const bubbleRect = tooltipEl.getBoundingClientRect();
+    let top = rect.top - bubbleRect.height - 10;
+    let left = rect.left + rect.width / 2 - bubbleRect.width / 2;
+    if (top < 8) top = rect.bottom + 10;
+    if (left < 8) left = 8;
+    if (left + bubbleRect.width > window.innerWidth - 8) left = window.innerWidth - bubbleRect.width - 8;
+    tooltipEl.style.top = top + 'px';
+    tooltipEl.style.left = left + 'px';
+  }
+
+  document.addEventListener('mouseover', (e) => {
+    const target = e.target.closest('[data-tip]');
+    if (!target) return;
+    tooltipEl.textContent = target.getAttribute('data-tip');
+    positionTooltip(target);
+    tooltipEl.classList.add('show');
+  });
+  document.addEventListener('mouseout', (e) => {
+    if (e.target.closest('[data-tip]')) {
+      tooltipEl.classList.remove('show');
+    }
+  });
+
+  // ── 처음 방문 안내 오버레이 ─────────────────────────────
+  function safeLocalStorage(fn, fallback) {
+    try { return fn(); } catch (e) { return fallback; }
+  }
+  function showOnboarding() {
+    $('#onboardingOverlay').classList.add('show');
+  }
+  function dismissOnboarding() {
+    $('#onboardingOverlay').classList.remove('show');
+    safeLocalStorage(() => localStorage.setItem('fixmock_onboarding_seen', '1'));
+  }
+  $('#onboardingCloseBtn').addEventListener('click', dismissOnboarding);
+  $('#helpBtn').addEventListener('click', showOnboarding);
+
+  const alreadySeen = safeLocalStorage(() => localStorage.getItem('fixmock_onboarding_seen') === '1', false);
+  if (!alreadySeen) {
+    showOnboarding();
+  }
+
+  // ── 용어 사전 드로어 ─────────────────────────────────────
+  function openGlossary() {
+    $('#glossaryDrawer').classList.add('show');
+    $('#glossaryBackdrop').classList.add('show');
+  }
+  function closeGlossary() {
+    $('#glossaryDrawer').classList.remove('show');
+    $('#glossaryBackdrop').classList.remove('show');
+  }
+  $('#glossaryToggle').addEventListener('click', openGlossary);
+  $('#glossaryCloseBtn').addEventListener('click', closeGlossary);
+  $('#glossaryBackdrop').addEventListener('click', closeGlossary);
 
   function setClient(id) {
     state.clientId = id;
@@ -472,8 +759,18 @@
     }
   });
 
+  const STATUS_TIPS = {
+    NEW: '아직 서버에 접수되지 않은 상태예요 (생성 직후).',
+    ACCEPTED: '서버가 검증을 통과시키고 주문을 정상적으로 접수한 상태예요.',
+    PARTIALLY_FILLED: '주문 수량 중 일부만 체결된 상태예요.',
+    FILLED: '주문 수량이 전부 체결된 상태예요.',
+    REJECTED: '서버가 검증에 실패해 주문을 거부한 상태예요.',
+    CANCELLED: '주문이 취소된 상태예요.',
+  };
+
   function statusBadge(status) {
-    return `<span class="status-badge ${status}">${status}</span>`;
+    const tip = STATUS_TIPS[status] || '';
+    return `<span class="status-badge ${status}" data-tip="${escapeHtml(tip)}">${status}</span>`;
   }
 
   function fmtPrice(p) {
@@ -520,7 +817,7 @@
         <td>${o.cumulativeQuantity}</td>
         <td>${statusBadge(o.status)}</td>
         <td>${cancellable.has(o.status)
-              ? `<button class="cancel-btn" onclick="window.__cancelOrder('${o.clientOrderId}')">취소</button>`
+              ? `<button class="cancel-btn" data-tip="아직 체결되지 않은 주문만 취소할 수 있어요." onclick="window.__cancelOrder('${o.clientOrderId}')">취소</button>`
               : `<button class="cancel-btn" disabled>취소</button>`}
         </td>
       </tr>
@@ -538,6 +835,13 @@
     }
   }
 
+  const MSG_TYPE_INFO = {
+    D: { label: '신규주문', tip: 'New Order Single(35=D): 신규 주문 접수 요청 메시지예요.' },
+    F: { label: '취소요청', tip: 'Order Cancel Request(35=F): 기존 주문의 취소를 요청하는 메시지예요.' },
+    '8': { label: '체결보고', tip: 'Execution Report(35=8): 주문 접수/거부/체결 결과를 알려주는 메시지예요.' },
+    '9': { label: '취소거부', tip: 'Order Cancel Reject(35=9): 취소 요청이 거부됐음을 알려주는 메시지예요.' },
+  };
+
   function renderLogs(entries) {
     const scroll = $('#logScroll');
     const wasAtBottom = scroll.scrollTop + scroll.clientHeight >= scroll.scrollHeight - 20;
@@ -548,10 +852,11 @@
     scroll.innerHTML = entries.map(e => {
       const time = new Date(e.timestamp).toLocaleTimeString('ko-KR', { hour12: false });
       const dirLabel = e.direction === 'SENT' ? '-> SERVER' : '<- SERVER';
-      return `<div class="log-line ${e.direction}">` +
+      const info = MSG_TYPE_INFO[e.msgType] || { label: e.msgType, tip: `MsgType(태그 35) 값: ${e.msgType}` };
+      return `<div class="log-line ${e.direction}" data-tip="${e.direction === 'SENT' ? '내가 서버로 보낸 메시지예요.' : '서버로부터 받은 메시지예요.'}">` +
         `<span class="ts">${time}</span>` +
         `<span class="tag">[${dirLabel}]</span>` +
-        `<span class="msgtype">MsgType=${e.msgType}</span>` +
+        `<span class="msgtype" data-tip="${escapeHtml(info.tip)}">MsgType=${e.msgType} (${info.label})</span>` +
         `${escapeHtml(e.raw)}` +
         `</div>`;
     }).join('');
@@ -564,7 +869,8 @@
     return String(str)
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
   async function refreshLogs() {
