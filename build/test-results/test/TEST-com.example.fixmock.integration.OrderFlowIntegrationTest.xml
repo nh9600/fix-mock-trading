@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.fixmock.integration.OrderFlowIntegrationTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-08-27T16:20:50.102Z" hostname="DESKTOP-QU7JKTR" time="0.044">
+  <properties/>
+  <testcase name="주문_취소가_정상적으로_처리된다()" classname="com.example.fixmock.integration.OrderFlowIntegrationTest" time="0.007"/>
+  <testcase name="존재하지_않는_주문ID_취소는_거부된다()" classname="com.example.fixmock.integration.OrderFlowIntegrationTest" time="0.004"/>
+  <testcase name="잘못된_형식의_바이트를_보내도_서버는_죽지_않고_이후_연결을_계속_처리한다()" classname="com.example.fixmock.integration.OrderFlowIntegrationTest" time="0.004"/>
+  <testcase name="이미_체결완료된_주문의_취소는_거부된다()" classname="com.example.fixmock.integration.OrderFlowIntegrationTest" time="0.005"/>
+  <testcase name="잘못된_주문은_거부된다_가격_음수()" classname="com.example.fixmock.integration.OrderFlowIntegrationTest" time="0.003"/>
+  <testcase name="매수와_매도가_체결되고_양측_모두에게_체결결과가_전달된다()" classname="com.example.fixmock.integration.OrderFlowIntegrationTest" time="0.007"/>
+  <testcase name="정상_주문_접수_테스트()" classname="com.example.fixmock.integration.OrderFlowIntegrationTest" time="0.003"/>
+  <testcase name="잘못된_주문은_거부된다_수량_0_이하()" classname="com.example.fixmock.integration.OrderFlowIntegrationTest" time="0.004"/>
+  <testcase name="잘못된_주문은_거부된다_존재하지_않는_종목()" classname="com.example.fixmock.integration.OrderFlowIntegrationTest" time="0.004"/>
+  <system-out><![CDATA[01:20:50.105 [Test worker] INFO com.example.fixmock.net.FixSocketServer -- Mock 거래소 FIX 서버 시작. port=55978
+01:20:50.106 [fix-server-accept-loop] INFO com.example.fixmock.net.FixSocketServer -- 새 클라이언트 연결: /127.0.0.1:55979
+01:20:50.107 [pool-7-thread-1] INFO com.example.fixmock.server.ServerOrderService -- 주문 접수: Order{clOrdId=CL-CXL, exOrdId=EX-1007, symbol=AAPL, side=BUY, type=LIMIT, price=100.00, qty=50, leaves=50, cum=0, status=ACCEPTED}
+01:20:50.108 [pool-7-thread-1] INFO com.example.fixmock.server.ServerOrderService -- 주문 취소 완료: Order{clOrdId=CL-CXL, exOrdId=EX-1007, symbol=AAPL, side=BUY, type=LIMIT, price=100.00, qty=50, leaves=0, cum=0, status=CANCELLED}
+01:20:50.108 [pool-7-thread-1] INFO com.example.fixmock.net.ClientHandler -- 클라이언트가 연결을 정상 종료했습니다: /127.0.0.1:55979
+01:20:50.108 [pool-7-thread-1] INFO com.example.fixmock.server.ServerOrderService -- 연결 종료로 세션 해제: senderCompId=CLIENT1
+01:20:50.110 [Test worker] INFO com.example.fixmock.net.FixSocketServer -- Mock 거래소 FIX 서버 종료. port=55978
+01:20:50.111 [Test worker] INFO com.example.fixmock.net.FixSocketServer -- Mock 거래소 FIX 서버 시작. port=55980
+01:20:50.112 [fix-server-accept-loop] INFO com.example.fixmock.net.FixSocketServer -- 새 클라이언트 연결: /127.0.0.1:55981
+01:20:50.113 [pool-8-thread-1] INFO com.example.fixmock.server.ServerOrderService -- 주문 취소 거부: origClOrdId=NO-SUCH-ORDER-ID, 사유=취소 대상 주문(ClOrdID=NO-SUCH-ORDER-ID)을 찾을 수 없습니다.
+01:20:50.113 [pool-8-thread-1] INFO com.example.fixmock.net.ClientHandler -- 클라이언트가 연결을 정상 종료했습니다: /127.0.0.1:55981
+01:20:50.113 [pool-8-thread-1] INFO com.example.fixmock.server.ServerOrderService -- 연결 종료로 세션 해제: senderCompId=CLIENT1
+01:20:50.114 [Test worker] INFO com.example.fixmock.net.FixSocketServer -- Mock 거래소 FIX 서버 종료. port=55980
+01:20:50.115 [Test worker] INFO com.example.fixmock.net.FixSocketServer -- Mock 거래소 FIX 서버 시작. port=55982
+01:20:50.116 [fix-server-accept-loop] INFO com.example.fixmock.net.FixSocketServer -- 새 클라이언트 연결: /127.0.0.1:55983
+01:20:50.117 [fix-server-accept-loop] INFO com.example.fixmock.net.FixSocketServer -- 새 클라이언트 연결: /127.0.0.1:55984
+01:20:50.117 [pool-9-thread-2] INFO com.example.fixmock.server.ServerOrderService -- 주문 접수: Order{clOrdId=CL-AFTER, exOrdId=EX-1008, symbol=AAPL, side=BUY, type=LIMIT, price=10.00, qty=5, leaves=5, cum=0, status=ACCEPTED}
+01:20:50.118 [pool-9-thread-2] INFO com.example.fixmock.net.ClientHandler -- 클라이언트가 연결을 정상 종료했습니다: /127.0.0.1:55984
+01:20:50.118 [pool-9-thread-2] INFO com.example.fixmock.server.ServerOrderService -- 연결 종료로 세션 해제: senderCompId=CLIENT-AFTER
+01:20:50.118 [Test worker] INFO com.example.fixmock.net.FixSocketServer -- Mock 거래소 FIX 서버 종료. port=55982
+01:20:50.118 [pool-9-thread-1] WARN com.example.fixmock.net.ClientHandler -- Socket 연결이 종료되었습니다(/127.0.0.1:55983): 메시지가 CheckSum(Tag 10) 필드 없이 스트림이 종료되었습니다. 남은 데이터: 'not-a-fix-message-at-all'
+01:20:50.118 [pool-9-thread-1] INFO com.example.fixmock.server.ServerOrderService -- 연결 종료로 세션 해제: senderCompId=null
+01:20:50.120 [Test worker] INFO com.example.fixmock.net.FixSocketServer -- Mock 거래소 FIX 서버 시작. port=55985
+01:20:50.120 [fix-server-accept-loop] INFO com.example.fixmock.net.FixSocketServer -- 새 클라이언트 연결: /127.0.0.1:55986
+01:20:50.121 [fix-server-accept-loop] INFO com.example.fixmock.net.FixSocketServer -- 새 클라이언트 연결: /127.0.0.1:55987
+01:20:50.122 [pool-10-thread-1] INFO com.example.fixmock.server.ServerOrderService -- 주문 접수: Order{clOrdId=CL-F1, exOrdId=EX-1009, symbol=AAPL, side=BUY, type=LIMIT, price=120.00, qty=10, leaves=10, cum=0, status=ACCEPTED}
+01:20:50.122 [pool-10-thread-2] INFO com.example.fixmock.server.ServerOrderService -- 주문 접수: Order{clOrdId=CL-F2, exOrdId=EX-1010, symbol=AAPL, side=SELL, type=LIMIT, price=120.00, qty=10, leaves=10, cum=0, status=ACCEPTED}
+01:20:50.122 [pool-10-thread-2] INFO com.example.fixmock.server.ServerOrderService -- 체결 발생: Trade{TRD-3, AAPL, qty=10, price=120.00, buyClOrdId=CL-F1, sellClOrdId=CL-F2}
+01:20:50.124 [pool-10-thread-1] INFO com.example.fixmock.server.ServerOrderService -- 주문 취소 거부: origClOrdId=CL-F1, 사유=이미 종료된 주문은 취소할 수 없습니다. 현재 상태=FILLED
+01:20:50.125 [pool-10-thread-2] INFO com.example.fixmock.net.ClientHandler -- 클라이언트가 연결을 정상 종료했습니다: /127.0.0.1:55987
+01:20:50.125 [pool-10-thread-1] INFO com.example.fixmock.net.ClientHandler -- 클라이언트가 연결을 정상 종료했습니다: /127.0.0.1:55986
+01:20:50.125 [pool-10-thread-2] INFO com.example.fixmock.server.ServerOrderService -- 연결 종료로 세션 해제: senderCompId=SELLER-F
+01:20:50.125 [pool-10-thread-1] INFO com.example.fixmock.server.ServerOrderService -- 연결 종료로 세션 해제: senderCompId=BUYER-F
+01:20:50.125 [Test worker] INFO com.example.fixmock.net.FixSocketServer -- Mock 거래소 FIX 서버 종료. port=55985
+01:20:50.127 [Test worker] INFO com.example.fixmock.net.FixSocketServer -- Mock 거래소 FIX 서버 시작. port=55988
+01:20:50.127 [fix-server-accept-loop] INFO com.example.fixmock.net.FixSocketServer -- 새 클라이언트 연결: /127.0.0.1:55989
+01:20:50.128 [pool-11-thread-1] INFO com.example.fixmock.server.ServerOrderService -- 주문 거부: clOrdId=CL-4, 사유=가격은 0보다 커야 합니다(음수/0 불가): -5.00
+01:20:50.129 [pool-11-thread-1] INFO com.example.fixmock.net.ClientHandler -- 클라이언트가 연결을 정상 종료했습니다: /127.0.0.1:55989
+01:20:50.129 [Test worker] INFO com.example.fixmock.net.FixSocketServer -- Mock 거래소 FIX 서버 종료. port=55988
+01:20:50.129 [pool-11-thread-1] INFO com.example.fixmock.server.ServerOrderService -- 연결 종료로 세션 해제: senderCompId=CLIENT1
+01:20:50.130 [Test worker] INFO com.example.fixmock.net.FixSocketServer -- Mock 거래소 FIX 서버 시작. port=55990
+01:20:50.131 [fix-server-accept-loop] INFO com.example.fixmock.net.FixSocketServer -- 새 클라이언트 연결: /127.0.0.1:55991
+01:20:50.132 [fix-server-accept-loop] INFO com.example.fixmock.net.FixSocketServer -- 새 클라이언트 연결: /127.0.0.1:55992
+01:20:50.134 [pool-12-thread-1] INFO com.example.fixmock.server.ServerOrderService -- 주문 접수: Order{clOrdId=BUY-1, exOrdId=EX-1011, symbol=AAPL, side=BUY, type=LIMIT, price=150.00, qty=100, leaves=100, cum=0, status=ACCEPTED}
+01:20:50.134 [pool-12-thread-2] INFO com.example.fixmock.server.ServerOrderService -- 주문 접수: Order{clOrdId=SELL-1, exOrdId=EX-1012, symbol=AAPL, side=SELL, type=LIMIT, price=150.00, qty=100, leaves=100, cum=0, status=ACCEPTED}
+01:20:50.135 [pool-12-thread-2] INFO com.example.fixmock.server.ServerOrderService -- 체결 발생: Trade{TRD-4, AAPL, qty=100, price=150.00, buyClOrdId=BUY-1, sellClOrdId=SELL-1}
+01:20:50.135 [pool-12-thread-2] INFO com.example.fixmock.net.ClientHandler -- 클라이언트가 연결을 정상 종료했습니다: /127.0.0.1:55992
+01:20:50.135 [pool-12-thread-1] INFO com.example.fixmock.net.ClientHandler -- 클라이언트가 연결을 정상 종료했습니다: /127.0.0.1:55991
+01:20:50.135 [pool-12-thread-2] INFO com.example.fixmock.server.ServerOrderService -- 연결 종료로 세션 해제: senderCompId=SELLER1
+01:20:50.135 [pool-12-thread-1] INFO com.example.fixmock.server.ServerOrderService -- 연결 종료로 세션 해제: senderCompId=BUYER1
+01:20:50.136 [Test worker] INFO com.example.fixmock.net.FixSocketServer -- Mock 거래소 FIX 서버 종료. port=55990
+01:20:50.137 [Test worker] INFO com.example.fixmock.net.FixSocketServer -- Mock 거래소 FIX 서버 시작. port=55993
+01:20:50.138 [fix-server-accept-loop] INFO com.example.fixmock.net.FixSocketServer -- 새 클라이언트 연결: /127.0.0.1:55994
+01:20:50.138 [pool-13-thread-1] INFO com.example.fixmock.server.ServerOrderService -- 주문 접수: Order{clOrdId=CL-1, exOrdId=EX-1013, symbol=AAPL, side=BUY, type=LIMIT, price=150.00, qty=100, leaves=100, cum=0, status=ACCEPTED}
+01:20:50.139 [pool-13-thread-1] INFO com.example.fixmock.net.ClientHandler -- 클라이언트가 연결을 정상 종료했습니다: /127.0.0.1:55994
+01:20:50.139 [pool-13-thread-1] INFO com.example.fixmock.server.ServerOrderService -- 연결 종료로 세션 해제: senderCompId=CLIENT1
+01:20:50.139 [Test worker] INFO com.example.fixmock.net.FixSocketServer -- Mock 거래소 FIX 서버 종료. port=55993
+01:20:50.140 [Test worker] INFO com.example.fixmock.net.FixSocketServer -- Mock 거래소 FIX 서버 시작. port=55995
+01:20:50.141 [fix-server-accept-loop] INFO com.example.fixmock.net.FixSocketServer -- 새 클라이언트 연결: /127.0.0.1:55996
+01:20:50.142 [pool-14-thread-1] INFO com.example.fixmock.server.ServerOrderService -- 주문 거부: clOrdId=CL-3, 사유=수량은 0보다 커야 합니다: 0
+01:20:50.142 [pool-14-thread-1] INFO com.example.fixmock.net.ClientHandler -- 클라이언트가 연결을 정상 종료했습니다: /127.0.0.1:55996
+01:20:50.143 [pool-14-thread-1] INFO com.example.fixmock.server.ServerOrderService -- 연결 종료로 세션 해제: senderCompId=CLIENT1
+01:20:50.143 [Test worker] INFO com.example.fixmock.net.FixSocketServer -- Mock 거래소 FIX 서버 종료. port=55995
+01:20:50.144 [Test worker] INFO com.example.fixmock.net.FixSocketServer -- Mock 거래소 FIX 서버 시작. port=55997
+01:20:50.145 [fix-server-accept-loop] INFO com.example.fixmock.net.FixSocketServer -- 새 클라이언트 연결: /127.0.0.1:55998
+01:20:50.145 [pool-15-thread-1] INFO com.example.fixmock.server.ServerOrderService -- 주문 거부: clOrdId=CL-2, 사유=존재하지 않는 종목입니다: NOSUCHSTOCK
+01:20:50.146 [pool-15-thread-1] INFO com.example.fixmock.net.ClientHandler -- 클라이언트가 연결을 정상 종료했습니다: /127.0.0.1:55998
+01:20:50.146 [Test worker] INFO com.example.fixmock.net.FixSocketServer -- Mock 거래소 FIX 서버 종료. port=55997
+01:20:50.147 [pool-15-thread-1] INFO com.example.fixmock.server.ServerOrderService -- 연결 종료로 세션 해제: senderCompId=CLIENT1
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

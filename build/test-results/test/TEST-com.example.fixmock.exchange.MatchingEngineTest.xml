@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.fixmock.exchange.MatchingEngineTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-08-27T16:20:50.155Z" hostname="DESKTOP-QU7JKTR" time="0.006">
+  <properties/>
+  <testcase name="같은_가격이면_먼저_들어온_주문이_시간우선으로_체결된다()" classname="com.example.fixmock.exchange.MatchingEngineTest" time="0.0"/>
+  <testcase name="가격이_교차하지_않으면_체결되지_않고_각자_호가창에_대기한다()" classname="com.example.fixmock.exchange.MatchingEngineTest" time="0.004"/>
+  <testcase name="가격이_같은_매수_매도_주문은_전량_체결된다()" classname="com.example.fixmock.exchange.MatchingEngineTest" time="0.0"/>
+  <testcase name="더_높은_매수호가가_더_낮은_매수호가보다_먼저_체결된다_가격우선()" classname="com.example.fixmock.exchange.MatchingEngineTest" time="0.0"/>
+  <testcase name="수량이_다르면_부분체결_후_잔량이_호가창에_남는다()" classname="com.example.fixmock.exchange.MatchingEngineTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

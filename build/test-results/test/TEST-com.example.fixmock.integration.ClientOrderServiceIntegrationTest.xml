@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.fixmock.integration.ClientOrderServiceIntegrationTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-08-27T16:20:49.569Z" hostname="DESKTOP-QU7JKTR" time="0.529">
+  <properties/>
+  <testcase name="주문을_넣으면_서버_접수_결과가_동기적으로_반영된다()" classname="com.example.fixmock.integration.ClientOrderServiceIntegrationTest" time="0.124"/>
+  <testcase name="매수와_매도가_체결되면_양쪽_클라이언트_로컬_상태가_모두_FILLED로_갱신된다()" classname="com.example.fixmock.integration.ClientOrderServiceIntegrationTest" time="0.241"/>
+  <testcase name="존재하지_않는_주문ID를_취소하면_클라이언트측에서_즉시_예외가_발생한다()" classname="com.example.fixmock.integration.ClientOrderServiceIntegrationTest" time="0.007"/>
+  <testcase name="주문_취소가_성공하면_로컬_상태가_CANCELLED로_바뀐다()" classname="com.example.fixmock.integration.ClientOrderServiceIntegrationTest" time="0.021"/>
+  <testcase name="이미_체결된_주문을_취소하면_CancelRejectedException이_발생한다()" classname="com.example.fixmock.integration.ClientOrderServiceIntegrationTest" time="0.124"/>
+  <testcase name="잘못된_주문은_클라이언트측에도_거부로_반영된다()" classname="com.example.fixmock.integration.ClientOrderServiceIntegrationTest" time="0.008"/>
+  <system-out><![CDATA[01:20:49.621 [Test worker] INFO com.example.fixmock.net.FixSocketServer -- Mock 거래소 FIX 서버 시작. port=55965
+01:20:49.633 [Test worker] INFO com.example.fixmock.client.ConnectionManager -- 클라이언트[TRADER-A] -> Mock 거래소(localhost:55965) 신규 TCP 연결 생성
+01:20:49.638 [fix-server-accept-loop] INFO com.example.fixmock.net.FixSocketServer -- 새 클라이언트 연결: /127.0.0.1:55966
+01:20:49.639 [Test worker] INFO com.example.fixmock.client.ClientOrderService -- [TRADER-A] New Order Single 전송: 8=FIX.4.4|9=113|35=D|49=TRADER-A|56=MOCK-EXCHANGE|34=1|52=20260827-16:20:49.632|11=TRADER-A-1|55=AAPL|54=1|38=100|40=2|44=150.00|10=143|
+01:20:49.643 [fix-client-reader-55966] INFO com.example.fixmock.client.ClientOrderService -- [TRADER-A] Execution Report 수신 (execType=0): Order{clOrdId=TRADER-A-1, exOrdId=EX-1001, symbol=AAPL, side=BUY, type=LIMIT, price=150.00, qty=100, leaves=100, cum=0, status=ACCEPTED}
+01:20:49.643 [pool-1-thread-1] INFO com.example.fixmock.server.ServerOrderService -- 주문 접수: Order{clOrdId=TRADER-A-1, exOrdId=EX-1001, symbol=AAPL, side=BUY, type=LIMIT, price=150.00, qty=100, leaves=100, cum=0, status=ACCEPTED}
+01:20:49.688 [Test worker] INFO com.example.fixmock.net.FixSocketServer -- Mock 거래소 FIX 서버 종료. port=55965
+01:20:49.696 [Test worker] INFO com.example.fixmock.net.FixSocketServer -- Mock 거래소 FIX 서버 시작. port=55967
+01:20:49.696 [Test worker] INFO com.example.fixmock.client.ConnectionManager -- 클라이언트[TRADER-BUY] -> Mock 거래소(localhost:55967) 신규 TCP 연결 생성
+01:20:49.697 [fix-server-accept-loop] INFO com.example.fixmock.net.FixSocketServer -- 새 클라이언트 연결: /127.0.0.1:55968
+01:20:49.697 [Test worker] INFO com.example.fixmock.client.ClientOrderService -- [TRADER-BUY] New Order Single 전송: 8=FIX.4.4|9=117|35=D|49=TRADER-BUY|56=MOCK-EXCHANGE|34=1|52=20260827-16:20:49.696|11=TRADER-BUY-1|55=AAPL|54=1|38=100|40=2|44=150.00|10=251|
+01:20:49.698 [pool-2-thread-1] INFO com.example.fixmock.server.ServerOrderService -- 주문 접수: Order{clOrdId=TRADER-BUY-1, exOrdId=EX-1002, symbol=AAPL, side=BUY, type=LIMIT, price=150.00, qty=100, leaves=100, cum=0, status=ACCEPTED}
+01:20:49.698 [fix-client-reader-55968] INFO com.example.fixmock.client.ClientOrderService -- [TRADER-BUY] Execution Report 수신 (execType=0): Order{clOrdId=TRADER-BUY-1, exOrdId=EX-1002, symbol=AAPL, side=BUY, type=LIMIT, price=150.00, qty=100, leaves=100, cum=0, status=ACCEPTED}
+01:20:49.698 [Test worker] INFO com.example.fixmock.client.ConnectionManager -- 클라이언트[TRADER-SELL] -> Mock 거래소(localhost:55967) 신규 TCP 연결 생성
+01:20:49.699 [fix-server-accept-loop] INFO com.example.fixmock.net.FixSocketServer -- 새 클라이언트 연결: /127.0.0.1:55969
+01:20:49.699 [Test worker] INFO com.example.fixmock.client.ClientOrderService -- [TRADER-SELL] New Order Single 전송: 8=FIX.4.4|9=119|35=D|49=TRADER-SELL|56=MOCK-EXCHANGE|34=2|52=20260827-16:20:49.698|11=TRADER-SELL-2|55=AAPL|54=2|38=100|40=2|44=150.00|10=130|
+01:20:49.701 [pool-2-thread-2] INFO com.example.fixmock.server.ServerOrderService -- 주문 접수: Order{clOrdId=TRADER-SELL-2, exOrdId=EX-1003, symbol=AAPL, side=SELL, type=LIMIT, price=150.00, qty=100, leaves=100, cum=0, status=ACCEPTED}
+01:20:49.701 [fix-client-reader-55969] INFO com.example.fixmock.client.ClientOrderService -- [TRADER-SELL] Execution Report 수신 (execType=0): Order{clOrdId=TRADER-SELL-2, exOrdId=EX-1003, symbol=AAPL, side=SELL, type=LIMIT, price=150.00, qty=100, leaves=100, cum=0, status=ACCEPTED}
+01:20:49.704 [pool-2-thread-2] INFO com.example.fixmock.server.ServerOrderService -- 체결 발생: Trade{TRD-1, AAPL, qty=100, price=150.00, buyClOrdId=TRADER-BUY-1, sellClOrdId=TRADER-SELL-2}
+01:20:49.709 [fix-client-reader-55968] INFO com.example.fixmock.client.ClientOrderService -- [TRADER-BUY] Execution Report 수신 (execType=F): Order{clOrdId=TRADER-BUY-1, exOrdId=EX-1002, symbol=AAPL, side=BUY, type=LIMIT, price=150.00, qty=100, leaves=0, cum=100, status=FILLED}
+01:20:49.709 [fix-client-reader-55969] INFO com.example.fixmock.client.ClientOrderService -- [TRADER-SELL] Execution Report 수신 (execType=F): Order{clOrdId=TRADER-SELL-2, exOrdId=EX-1003, symbol=AAPL, side=SELL, type=LIMIT, price=150.00, qty=100, leaves=0, cum=100, status=FILLED}
+01:20:49.933 [Test worker] INFO com.example.fixmock.net.FixSocketServer -- Mock 거래소 FIX 서버 종료. port=55967
+01:20:49.938 [Test worker] INFO com.example.fixmock.net.FixSocketServer -- Mock 거래소 FIX 서버 시작. port=55970
+01:20:49.943 [Test worker] INFO com.example.fixmock.net.FixSocketServer -- Mock 거래소 FIX 서버 종료. port=55970
+01:20:49.948 [Test worker] INFO com.example.fixmock.net.FixSocketServer -- Mock 거래소 FIX 서버 시작. port=55971
+01:20:49.951 [Test worker] INFO com.example.fixmock.client.ConnectionManager -- 클라이언트[TRADER-C] -> Mock 거래소(localhost:55971) 신규 TCP 연결 생성
+01:20:49.953 [fix-server-accept-loop] INFO com.example.fixmock.net.FixSocketServer -- 새 클라이언트 연결: /127.0.0.1:55972
+01:20:49.961 [Test worker] INFO com.example.fixmock.client.ClientOrderService -- [TRADER-C] New Order Single 전송: 8=FIX.4.4|9=112|35=D|49=TRADER-C|56=MOCK-EXCHANGE|34=1|52=20260827-16:20:49.949|11=TRADER-C-1|55=AAPL|54=1|38=30|40=2|44=100.00|10=106|
+01:20:49.962 [pool-4-thread-1] INFO com.example.fixmock.server.ServerOrderService -- 주문 접수: Order{clOrdId=TRADER-C-1, exOrdId=EX-1004, symbol=AAPL, side=BUY, type=LIMIT, price=100.00, qty=30, leaves=30, cum=0, status=ACCEPTED}
+01:20:49.962 [fix-client-reader-55972] INFO com.example.fixmock.client.ClientOrderService -- [TRADER-C] Execution Report 수신 (execType=0): Order{clOrdId=TRADER-C-1, exOrdId=EX-1004, symbol=AAPL, side=BUY, type=LIMIT, price=100.00, qty=30, leaves=30, cum=0, status=ACCEPTED}
+01:20:49.964 [Test worker] INFO com.example.fixmock.client.ClientOrderService -- [TRADER-C] Order Cancel Request 전송: 8=FIX.4.4|9=109|35=F|49=TRADER-C|56=MOCK-EXCHANGE|34=2|52=20260827-16:20:49.963|11=TRADER-C-CXL-2|41=TRADER-C-1|55=AAPL|54=1|10=018|
+01:20:49.964 [pool-4-thread-1] INFO com.example.fixmock.server.ServerOrderService -- 주문 취소 완료: Order{clOrdId=TRADER-C-1, exOrdId=EX-1004, symbol=AAPL, side=BUY, type=LIMIT, price=100.00, qty=30, leaves=0, cum=0, status=CANCELLED}
+01:20:49.965 [fix-client-reader-55972] INFO com.example.fixmock.client.ClientOrderService -- [TRADER-C] Execution Report 수신 (execType=4): Order{clOrdId=TRADER-C-1, exOrdId=EX-1004, symbol=AAPL, side=BUY, type=LIMIT, price=100.00, qty=30, leaves=0, cum=0, status=CANCELLED}
+01:20:49.965 [Test worker] INFO com.example.fixmock.net.FixSocketServer -- Mock 거래소 FIX 서버 종료. port=55971
+01:20:49.967 [Test worker] INFO com.example.fixmock.net.FixSocketServer -- Mock 거래소 FIX 서버 시작. port=55973
+01:20:49.967 [Test worker] INFO com.example.fixmock.client.ConnectionManager -- 클라이언트[TRADER-BUY2] -> Mock 거래소(localhost:55973) 신규 TCP 연결 생성
+01:20:49.967 [fix-server-accept-loop] INFO com.example.fixmock.net.FixSocketServer -- 새 클라이언트 연결: /127.0.0.1:55974
+01:20:49.967 [Test worker] INFO com.example.fixmock.client.ClientOrderService -- [TRADER-BUY2] New Order Single 전송: 8=FIX.4.4|9=118|35=D|49=TRADER-BUY2|56=MOCK-EXCHANGE|34=1|52=20260827-16:20:49.967|11=TRADER-BUY2-1|55=AAPL|54=1|38=20|40=2|44=140.00|10=049|
+01:20:49.969 [pool-5-thread-1] INFO com.example.fixmock.server.ServerOrderService -- 주문 접수: Order{clOrdId=TRADER-BUY2-1, exOrdId=EX-1005, symbol=AAPL, side=BUY, type=LIMIT, price=140.00, qty=20, leaves=20, cum=0, status=ACCEPTED}
+01:20:49.969 [fix-client-reader-55974] INFO com.example.fixmock.client.ClientOrderService -- [TRADER-BUY2] Execution Report 수신 (execType=0): Order{clOrdId=TRADER-BUY2-1, exOrdId=EX-1005, symbol=AAPL, side=BUY, type=LIMIT, price=140.00, qty=20, leaves=20, cum=0, status=ACCEPTED}
+01:20:49.969 [Test worker] INFO com.example.fixmock.client.ConnectionManager -- 클라이언트[TRADER-SELL2] -> Mock 거래소(localhost:55973) 신규 TCP 연결 생성
+01:20:49.970 [fix-server-accept-loop] INFO com.example.fixmock.net.FixSocketServer -- 새 클라이언트 연결: /127.0.0.1:55975
+01:20:49.970 [Test worker] INFO com.example.fixmock.client.ClientOrderService -- [TRADER-SELL2] New Order Single 전송: 8=FIX.4.4|9=120|35=D|49=TRADER-SELL2|56=MOCK-EXCHANGE|34=2|52=20260827-16:20:49.969|11=TRADER-SELL2-2|55=AAPL|54=2|38=20|40=2|44=140.00|10=175|
+01:20:49.970 [pool-5-thread-2] INFO com.example.fixmock.server.ServerOrderService -- 주문 접수: Order{clOrdId=TRADER-SELL2-2, exOrdId=EX-1006, symbol=AAPL, side=SELL, type=LIMIT, price=140.00, qty=20, leaves=20, cum=0, status=ACCEPTED}
+01:20:49.970 [pool-5-thread-2] INFO com.example.fixmock.server.ServerOrderService -- 체결 발생: Trade{TRD-2, AAPL, qty=20, price=140.00, buyClOrdId=TRADER-BUY2-1, sellClOrdId=TRADER-SELL2-2}
+01:20:49.970 [fix-client-reader-55975] INFO com.example.fixmock.client.ClientOrderService -- [TRADER-SELL2] Execution Report 수신 (execType=0): Order{clOrdId=TRADER-SELL2-2, exOrdId=EX-1006, symbol=AAPL, side=SELL, type=LIMIT, price=140.00, qty=20, leaves=20, cum=0, status=ACCEPTED}
+01:20:49.971 [fix-client-reader-55974] INFO com.example.fixmock.client.ClientOrderService -- [TRADER-BUY2] Execution Report 수신 (execType=F): Order{clOrdId=TRADER-BUY2-1, exOrdId=EX-1005, symbol=AAPL, side=BUY, type=LIMIT, price=140.00, qty=20, leaves=0, cum=20, status=FILLED}
+01:20:49.971 [fix-client-reader-55975] INFO com.example.fixmock.client.ClientOrderService -- [TRADER-SELL2] Execution Report 수신 (execType=F): Order{clOrdId=TRADER-SELL2-2, exOrdId=EX-1006, symbol=AAPL, side=SELL, type=LIMIT, price=140.00, qty=20, leaves=0, cum=20, status=FILLED}
+01:20:50.086 [Test worker] INFO com.example.fixmock.client.ClientOrderService -- [TRADER-BUY2] Order Cancel Request 전송: 8=FIX.4.4|9=118|35=F|49=TRADER-BUY2|56=MOCK-EXCHANGE|34=3|52=20260827-16:20:50.085|11=TRADER-BUY2-CXL-3|41=TRADER-BUY2-1|55=AAPL|54=1|10=164|
+01:20:50.087 [pool-5-thread-1] INFO com.example.fixmock.server.ServerOrderService -- 주문 취소 거부: origClOrdId=TRADER-BUY2-1, 사유=이미 종료된 주문은 취소할 수 없습니다. 현재 상태=FILLED
+01:20:50.089 [fix-client-reader-55974] INFO com.example.fixmock.client.ClientOrderService -- Order Cancel Reject 수신: origClOrdId=TRADER-BUY2-1, 사유=이미 종료된 주문은 취소할 수 없습니다. 현재 상태=FILLED
+01:20:50.089 [Test worker] INFO com.example.fixmock.net.FixSocketServer -- Mock 거래소 FIX 서버 종료. port=55973
+01:20:50.092 [Test worker] INFO com.example.fixmock.net.FixSocketServer -- Mock 거래소 FIX 서버 시작. port=55976
+01:20:50.092 [Test worker] INFO com.example.fixmock.client.ConnectionManager -- 클라이언트[TRADER-A] -> Mock 거래소(localhost:55976) 신규 TCP 연결 생성
+01:20:50.094 [fix-server-accept-loop] INFO com.example.fixmock.net.FixSocketServer -- 새 클라이언트 연결: /127.0.0.1:55977
+01:20:50.094 [Test worker] INFO com.example.fixmock.client.ClientOrderService -- [TRADER-A] New Order Single 전송: 8=FIX.4.4|9=113|35=D|49=TRADER-A|56=MOCK-EXCHANGE|34=1|52=20260827-16:20:50.092|11=TRADER-A-1|55=NOSUCH|54=1|38=10|40=2|44=10.00|10=212|
+01:20:50.096 [pool-6-thread-1] INFO com.example.fixmock.server.ServerOrderService -- 주문 거부: clOrdId=TRADER-A-1, 사유=존재하지 않는 종목입니다: NOSUCH
+01:20:50.096 [fix-client-reader-55977] INFO com.example.fixmock.client.ClientOrderService -- [TRADER-A] Execution Report 수신 (execType=8): Order{clOrdId=TRADER-A-1, exOrdId=NONE, symbol=NOSUCH, side=BUY, type=LIMIT, price=10.00, qty=10, leaves=0, cum=0, status=REJECTED}
+01:20:50.098 [Test worker] INFO com.example.fixmock.net.FixSocketServer -- Mock 거래소 FIX 서버 종료. port=55976
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

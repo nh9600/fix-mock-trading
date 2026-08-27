@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mock FIX Trading Terminal</title>
+<style>
+  :root {
+    --bg: #0b0e14;
+    --panel: #11151f;
+    --panel-border: #232838;
+    --text: #d7dbe6;
+    --text-dim: #7a8195;
+    --accent: #3b82f6;
+    --buy: #16c784;
+    --sell: #f0435a;
+    --warn: #f5a623;
+    --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Pretendard, 'Malgun Gothic', sans-serif;
+    font-size: 14px;
+  }
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 22px;
+    border-bottom: 1px solid var(--panel-border);
+    background: linear-gradient(180deg, #10131c, #0b0e14);
+  }
+  header h1 {
+    font-size: 16px;
+    margin: 0;
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  header h1 .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--buy);
+    box-shadow: 0 0 8px var(--buy);
+  }
+  header .sub {
+    color: var(--text-dim);
+    font-size: 12px;
+    margin-top: 2px;
+  }
+  .client-switch {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .client-switch input {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    color: var(--text);
+    padding: 7px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    width: 160px;
+  }
+  .chip {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    color: var(--text-dim);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .chip:hover { border-color: var(--accent); color: var(--text); }
+  .chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  main {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    grid-template-rows: auto 1fr;
+    gap: 16px;
+    padding: 18px 22px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .panel h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-dim);
+    margin: 0 0 14px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .panel h2 .live {
+    font-size: 10px;
+    color: var(--buy);
+    font-weight: normal;
+    text-transform: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .panel h2 .live .pulse {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--buy);
+    animation: pulse 1.6s infinite;
+  }
+  @keyframes pulse {
+    0% { opacity: .3; } 50% { opacity: 1; } 100% { opacity: .3; }
+  }
+
+  form.order-form { display: flex; flex-direction: column; gap: 12px; }
+  .field label {
+    display: block;
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 5px;
+  }
+  select, input[type=number], input[type=text] {
+    width: 100%;
+    background: #171b28;
+    border: 1px solid var(--panel-border);
+    color: var(--text);
+    padding: 9px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+  }
+  select:focus, input:focus { outline: none; border-color: var(--accent); }
+
+  .side-toggle, .type-toggle {
+    display: flex;
+    gap: 8px;
+  }
+  .toggle-btn {
+    flex: 1;
+    padding: 9px 0;
+    text-align: center;
+    border-radius: 6px;
+    border: 1px solid var(--panel-border);
+    background: #171b28;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    transition: all .12s;
+  }
+  .toggle-btn.buy-active { background: rgba(22,199,132,0.15); border-color: var(--buy); color: var(--buy); }
+  .toggle-btn.sell-active { background: rgba(240,67,90,0.15); border-color: var(--sell); color: var(--sell); }
+  .toggle-btn.type-active { background: rgba(59,130,246,0.15); border-color: var(--accent); color: var(--accent); }
+
+  .submit-btn {
+    margin-top: 4px;
+    padding: 11px 0;
+    border: none;
+    border-radius: 6px;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: filter .12s;
+  }
+  .submit-btn:hover { filter: brightness(1.1); }
+  .submit-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+  .flash {
+    font-size: 12px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    display: none;
+  }
+  .flash.show { display: block; }
+  .flash.ok { background: rgba(22,199,132,0.12); color: var(--buy); border: 1px solid rgba(22,199,132,0.3); }
+  .flash.err { background: rgba(240,67,90,0.12); color: var(--sell); border: 1px solid rgba(240,67,90,0.3); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  thead th {
+    text-align: left;
+    color: var(--text-dim);
+    font-weight: 600;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--panel-border);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  tbody td {
+    padding: 9px 10px;
+    border-bottom: 1px solid #181c28;
+    font-family: var(--mono);
+    white-space: nowrap;
+  }
+  tbody tr:hover { background: #151a26; }
+  .side-badge { font-family: var(--mono); font-weight: 700; }
+  .side-badge.BUY { color: var(--buy); }
+  .side-badge.SELL { color: var(--sell); }
+
+  .status-badge {
+    padding: 3px 9px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    display: inline-block;
+  }
+  .status-badge.NEW { background: rgba(122,129,149,0.2); color: var(--text-dim); }
+  .status-badge.ACCEPTED { background: rgba(59,130,246,0.18); color: var(--accent); }
+  .status-badge.PARTIALLY_FILLED { background: rgba(245,166,35,0.18); color: var(--warn); }
+  .status-badge.FILLED { background: rgba(22,199,132,0.18); color: var(--buy); }
+  .status-badge.REJECTED { background: rgba(240,67,90,0.18); color: var(--sell); }
+  .status-badge.CANCELLED { background: rgba(122,129,149,0.18); color: var(--text-dim); text-decoration: line-through; }
+
+  .cancel-btn {
+    background: none;
+    border: 1px solid var(--sell);
+    color: var(--sell);
+    padding: 4px 10px;
+    border-radius: 5px;
+    font-size: 11px;
+    cursor: pointer;
+  }
+  .cancel-btn:hover { background: rgba(240,67,90,0.12); }
+  .cancel-btn:disabled { opacity: .3; cursor: not-allowed; border-color: var(--text-dim); color: var(--text-dim); }
+
+  .empty-row td { color: var(--text-dim); text-align: center; padding: 24px 0; font-family: inherit; }
+
+  .log-panel { grid-column: 1 / -1; }
+  .log-scroll {
+    max-height: 320px;
+    overflow-y: auto;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.7;
+    background: #0d1017;
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+  .log-line { white-space: pre-wrap; word-break: break-all; padding: 3px 0; border-bottom: 1px dashed #1a1f2c; }
+  .log-line .tag { display: inline-block; width: 66px; font-weight: 700; }
+  .log-line.SENT .tag { color: var(--accent); }
+  .log-line.RECEIVED .tag { color: var(--warn); }
+  .log-line .ts { color: var(--text-dim); margin-right: 8px; }
+  .log-line .msgtype { color: #9aa4bd; margin-right: 8px; }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: #262c3d; border-radius: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+
+  footer {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 11px;
+    padding: 10px 0 24px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1><span class="dot"></span>Mock FIX Trading Terminal</h1>
+    <div class="sub">FIX 4.4 (hand-rolled) · TCP Socket · In-memory Matching Engine</div>
+  </div>
+  <div class="client-switch">
+    <div class="chip" data-client="TRADER-A">TRADER-A</div>
+    <div class="chip" data-client="TRADER-B">TRADER-B</div>
+    <input type="text" id="clientIdInput" value="TRADER-A" spellcheck="false">
+  </div>
+</header>
+
+<main>
+  <section class="panel">
+    <h2>주문 입력 <span id="clientLabel" style="color:var(--accent);font-weight:700;"></span></h2>
+    <form class="order-form" id="orderForm">
+      <div class="field">
+        <label>종목 (Symbol)</label>
+        <select id="symbol">
+          <option>AAPL</option>
+          <option>GOOG</option>
+          <option>MSFT</option>
+          <option>AMZN</option>
+          <option>TSLA</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>매수/매도 (Side)</label>
+        <div class="side-toggle">
+          <div class="toggle-btn buy-active" data-side="BUY" id="btnBuy">BUY</div>
+          <div class="toggle-btn" data-side="SELL" id="btnSell">SELL</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>주문 유형 (OrdType)</label>
+        <div class="type-toggle">
+          <div class="toggle-btn type-active" data-type="LIMIT" id="btnLimit">LIMIT</div>
+          <div class="toggle-btn" data-type="MARKET" id="btnMarket">MARKET</div>
+        </div>
+      </div>
+
+      <div class="field" id="priceField">
+        <label>가격 (Price)</label>
+        <input type="number" id="price" step="0.01" min="0" value="150.00">
+      </div>
+
+      <div class="field">
+        <label>수량 (Quantity)</label>
+        <input type="number" id="quantity" step="1" min="1" value="100">
+      </div>
+
+      <button type="submit" class="submit-btn" id="submitBtn">주문 전송 (New Order Single)</button>
+      <div class="flash" id="flash"></div>
+    </form>
+  </section>
+
+  <section class="panel">
+    <h2>
+      내 주문 목록
+      <span class="live"><span class="pulse"></span>LIVE</span>
+    </h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ClOrdID</th>
+          <th>거래소 ID</th>
+          <th>종목</th>
+          <th>구분</th>
+          <th>유형</th>
+          <th>가격</th>
+          <th>수량</th>
+          <th>잔량</th>
+          <th>누적체결</th>
+          <th>상태</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="ordersBody">
+        <tr class="empty-row"><td colspan="11">주문 내역이 없습니다.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="panel log-panel">
+    <h2>
+      FIX 메시지 로그 (Wire Protocol)
+      <span class="live"><span class="pulse"></span>LIVE</span>
+    </h2>
+    <div class="log-scroll" id="logScroll">
+      <div class="log-line" style="color:var(--text-dim)">아직 주고받은 메시지가 없습니다. 왼쪽에서 주문을 넣어보세요.</div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  학습용 Mock 거래 시스템 — 실제 FIX 표준의 세션 관리(Logon/Heartbeat/재전송)는 구현되어 있지 않습니다.
+</footer>
+
+<script>
+(function () {
+  const state = {
+    clientId: 'TRADER-A',
+    side: 'BUY',
+    orderType: 'LIMIT',
+    pollTimer: null,
+  };
+
+  const $ = (sel) => document.querySelector(sel);
+  const clientIdInput = $('#clientIdInput');
+  const clientLabel = $('#clientLabel');
+  const priceField = $('#priceField');
+  const flash = $('#flash');
+
+  function setClient(id) {
+    state.clientId = id;
+    clientIdInput.value = id;
+    clientLabel.textContent = '(' + id + ')';
+    document.querySelectorAll('.chip[data-client]').forEach(c => {
+      c.classList.toggle('active', c.dataset.client === id);
+    });
+    $('#ordersBody').innerHTML = '<tr class="empty-row"><td colspan="11">불러오는 중...</td></tr>';
+    $('#logScroll').innerHTML = '<div class="log-line" style="color:var(--text-dim)">불러오는 중...</div>';
+    refreshOrders();
+    refreshLogs();
+  }
+
+  document.querySelectorAll('.chip[data-client]').forEach(chip => {
+    chip.addEventListener('click', () => setClient(chip.dataset.client));
+  });
+  clientIdInput.addEventListener('change', () => {
+    const v = clientIdInput.value.trim();
+    if (v) setClient(v);
+  });
+
+  $('#btnBuy').addEventListener('click', () => {
+    state.side = 'BUY';
+    $('#btnBuy').classList.add('buy-active');
+    $('#btnBuy').classList.remove('sell-active');
+    $('#btnSell').classList.remove('sell-active', 'buy-active');
+  });
+  $('#btnSell').addEventListener('click', () => {
+    state.side = 'SELL';
+    $('#btnSell').classList.add('sell-active');
+    $('#btnBuy').classList.remove('buy-active');
+  });
+  $('#btnLimit').addEventListener('click', () => {
+    state.orderType = 'LIMIT';
+    $('#btnLimit').classList.add('type-active');
+    $('#btnMarket').classList.remove('type-active');
+    priceField.style.display = '';
+  });
+  $('#btnMarket').addEventListener('click', () => {
+    state.orderType = 'MARKET';
+    $('#btnMarket').classList.add('type-active');
+    $('#btnLimit').classList.remove('type-active');
+    priceField.style.display = 'none';
+  });
+
+  function showFlash(msg, ok) {
+    flash.textContent = msg;
+    flash.className = 'flash show ' + (ok ? 'ok' : 'err');
+    setTimeout(() => flash.classList.remove('show'), 4000);
+  }
+
+  $('#orderForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitBtn = $('#submitBtn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = '전송 중...';
+
+    const body = {
+      symbol: $('#symbol').value,
+      side: state.side,
+      orderType: state.orderType,
+      quantity: parseInt($('#quantity').value, 10),
+    };
+    if (state.orderType === 'LIMIT') {
+      body.price = parseFloat($('#price').value);
+    }
+
+    try {
+      const res = await fetch(`/api/clients/${encodeURIComponent(state.clientId)}/orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        showFlash('주문 실패: ' + (data && data.message ? data.message : res.status), false);
+      } else {
+        showFlash(`주문 전송됨 (ClOrdID=${data.clientOrderId}, 상태=${data.status})`, true);
+      }
+    } catch (err) {
+      showFlash('요청 실패: ' + err.message, false);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = '주문 전송 (New Order Single)';
+      refreshOrders();
+      refreshLogs();
+    }
+  });
+
+  function statusBadge(status) {
+    return `<span class="status-badge ${status}">${status}</span>`;
+  }
+
+  function fmtPrice(p) {
+    return (p === null || p === undefined) ? '시장가' : Number(p).toFixed(2);
+  }
+
+  async function cancelOrder(clOrdId) {
+    try {
+      const res = await fetch(`/api/clients/${encodeURIComponent(state.clientId)}/orders/${encodeURIComponent(clOrdId)}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        showFlash('취소 실패: ' + (data && data.message ? data.message : res.status), false);
+      } else {
+        showFlash('취소 요청 완료: ' + clOrdId, true);
+      }
+    } catch (err) {
+      showFlash('취소 요청 실패: ' + err.message, false);
+    } finally {
+      refreshOrders();
+      refreshLogs();
+    }
+  }
+  window.__cancelOrder = cancelOrder;
+
+  function renderOrders(orders) {
+    const tbody = $('#ordersBody');
+    if (!orders || orders.length === 0) {
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="11">주문 내역이 없습니다.</td></tr>';
+      return;
+    }
+    const cancellable = new Set(['ACCEPTED', 'PARTIALLY_FILLED']);
+    tbody.innerHTML = orders.map(o => `
+      <tr>
+        <td>${o.clientOrderId}</td>
+        <td>${o.exchangeOrderId || '-'}</td>
+        <td>${o.symbol}</td>
+        <td><span class="side-badge ${o.side}">${o.side}</span></td>
+        <td>${o.orderType}</td>
+        <td>${fmtPrice(o.price)}</td>
+        <td>${o.originalQuantity}</td>
+        <td>${o.leavesQuantity}</td>
+        <td>${o.cumulativeQuantity}</td>
+        <td>${statusBadge(o.status)}</td>
+        <td>${cancellable.has(o.status)
+              ? `<button class="cancel-btn" onclick="window.__cancelOrder('${o.clientOrderId}')">취소</button>`
+              : `<button class="cancel-btn" disabled>취소</button>`}
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  async function refreshOrders() {
+    try {
+      const res = await fetch(`/api/clients/${encodeURIComponent(state.clientId)}/orders`);
+      if (!res.ok) return;
+      const data = await res.json();
+      renderOrders(data);
+    } catch (err) {
+      // 폴링 중 일시적 오류는 조용히 무시하고 다음 주기에 재시도한다.
+    }
+  }
+
+  function renderLogs(entries) {
+    const scroll = $('#logScroll');
+    const wasAtBottom = scroll.scrollTop + scroll.clientHeight >= scroll.scrollHeight - 20;
+    if (!entries || entries.length === 0) {
+      scroll.innerHTML = '<div class="log-line" style="color:var(--text-dim)">아직 주고받은 메시지가 없습니다. 왼쪽에서 주문을 넣어보세요.</div>';
+      return;
+    }
+    scroll.innerHTML = entries.map(e => {
+      const time = new Date(e.timestamp).toLocaleTimeString('ko-KR', { hour12: false });
+      const dirLabel = e.direction === 'SENT' ? '-> SERVER' : '<- SERVER';
+      return `<div class="log-line ${e.direction}">` +
+        `<span class="ts">${time}</span>` +
+        `<span class="tag">[${dirLabel}]</span>` +
+        `<span class="msgtype">MsgType=${e.msgType}</span>` +
+        `${escapeHtml(e.raw)}` +
+        `</div>`;
+    }).join('');
+    if (wasAtBottom) {
+      scroll.scrollTop = scroll.scrollHeight;
+    }
+  }
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  async function refreshLogs() {
+    try {
+      const res = await fetch(`/api/clients/${encodeURIComponent(state.clientId)}/messages`);
+      if (!res.ok) return;
+      const data = await res.json();
+      renderLogs(data);
+    } catch (err) {
+      // 폴링 중 일시적 오류는 조용히 무시하고 다음 주기에 재시도한다.
+    }
+  }
+
+  function startPolling() {
+    if (state.pollTimer) clearInterval(state.pollTimer);
+    state.pollTimer = setInterval(() => {
+      refreshOrders();
+      refreshLogs();
+    }, 1500);
+  }
+
+  setClient('TRADER-A');
+  startPolling();
+})();
+</script>
+
+</body>
+</html>

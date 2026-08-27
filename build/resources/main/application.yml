@@ -1,0 +1,12 @@
+server:
+  port: 8080
+
+fix:
+  mock-exchange:
+    # Mock 거래소(TCP FIX 서버)가 열어두는 포트.
+    # 실제 서비스라면 서버와 클라이언트가 서로 다른 프로세스/서버에 있겠지만,
+    # 이 학습용 예제는 하나의 Spring Boot 프로세스 안에서 "서버 역할 스레드"와
+    # "클라이언트 역할 REST API"를 함께 띄워서 실행 편의성을 높였다.
+    port: 9878
+  client:
+    host: localhost

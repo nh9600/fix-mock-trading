@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.fixmock.fix.FixMessageParserTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-08-27T16:20:50.165Z" hostname="DESKTOP-QU7JKTR" time="0.004">
+  <properties/>
+  <testcase name="LIMIT_주문인데_Price_태그가_없으면_필수필드_검증에서_예외가_발생한다()" classname="com.example.fixmock.fix.FixMessageParserTest" time="0.001"/>
+  <testcase name="체크섬이_조작된_메시지는_예외가_발생한다()" classname="com.example.fixmock.fix.FixMessageParserTest" time="0.001"/>
+  <testcase name="정상_메시지는_모든_필드가_올바르게_파싱된다()" classname="com.example.fixmock.fix.FixMessageParserTest" time="0.001"/>
+  <testcase name="빈_메시지는_예외가_발생한다()" classname="com.example.fixmock.fix.FixMessageParserTest" time="0.0"/>
+  <testcase name="Tag_Value_형식이_아닌_필드는_예외가_발생한다()" classname="com.example.fixmock.fix.FixMessageParserTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
