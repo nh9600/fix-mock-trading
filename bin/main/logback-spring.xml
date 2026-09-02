@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    애플리케이션 로그(log.info/log.warn 등) 설정 파일.
+
+    이전에는 application.yml의 logging.* 프로퍼티로 설정했지만,
+    "콘솔에는 색깔 있는 기본 포맷 그대로, 파일에는 롤오버/보관 정책까지 세밀하게"
+    처럼 더 구체적으로 제어하고 싶을 때는 이렇게 logback 설정 파일을 직접 쓰는 편이
+    더 명확하다.
+
+    파일명을 logback.xml이 아니라 logback-spring.xml로 한 이유:
+    스프링 부트가 이 파일을 늦게(스프링 컨텍스트가 준비된 뒤) 읽어서,
+    나중에 <springProfile> 같은 스프링 전용 태그를 쓰고 싶어질 때도 문제없이 확장할 수 있다.
+-->
+<configuration>
+
+    <!-- 스프링 부트 기본 콘솔 로그 설정(컬러 포맷 등)을 그대로 재사용한다. -->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+    <property name="LOG_FILE" value="logs/fix-mock-trading.log"/>
+
+    <!--
+        파일 로그 설정.
+        - logs/fix-mock-trading.log 로 계속 쌓다가, 하루가 지나거나 10MB를 넘으면
+          logs/fix-mock-trading-YYYY-MM-DD.N.log 형태로 새 파일로 넘어간다(rollover).
+        - 과거 로그는 14일치까지만, 전체 용량은 100MB까지만 보관하고 그 이상은 자동 삭제한다.
+    -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE}</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>logs/fix-mock-trading-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>14</maxHistory>
+            <totalSizeCap>100MB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 우리 애플리케이션 코드(com.example.fixmock)는 INFO 레벨까지 남긴다. -->
+    <logger name="com.example.fixmock" level="INFO"/>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+</configuration>

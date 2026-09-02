@@ -11,6 +11,7 @@ import com.example.fixmock.fix.FixMessageBuilder;
 import com.example.fixmock.fix.FixMsgType;
 import com.example.fixmock.fix.FixTags;
 import com.example.fixmock.net.FixSocketClient;
+import com.example.fixmock.persistence.TradePersistenceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +43,7 @@ public class ClientOrderService {
     private final ConnectionManager connectionManager;
     private final ClientOrderStore orderStore;
     private final FixMessageLogStore messageLogStore;
+    private final TradePersistenceService persistenceService;
     private final AtomicInteger clOrdIdSeq = new AtomicInteger(0);
     private final AtomicInteger outboundSeqNum = new AtomicInteger(0);
 
@@ -51,10 +53,11 @@ public class ClientOrderService {
     private final ConcurrentHashMap<String, CompletableFuture<Order>> pendingCancels = new ConcurrentHashMap<>();
 
     public ClientOrderService(ConnectionManager connectionManager, ClientOrderStore orderStore,
-                               FixMessageLogStore messageLogStore) {
+                               FixMessageLogStore messageLogStore, TradePersistenceService persistenceService) {
         this.connectionManager = connectionManager;
         this.orderStore = orderStore;
         this.messageLogStore = messageLogStore;
+        this.persistenceService = persistenceService;
     }
 
     /**
@@ -66,6 +69,7 @@ public class ClientOrderService {
         String clOrdId = clientId + "-" + clOrdIdSeq.incrementAndGet();
         Order localOrder = new Order(clOrdId, clientId, symbol, side, orderType, price, quantity);
         orderStore.save(localOrder);
+        persistenceService.saveOrderSnapshot(localOrder);
 
         CompletableFuture<Order> ackFuture = new CompletableFuture<>();
         pendingAcks.put(clOrdId, ackFuture);
@@ -76,6 +80,7 @@ public class ClientOrderService {
         FixSocketClient connection = connectionManager.getOrCreate(clientId, msg -> handleIncoming(clientId, msg));
         log.info("[{}] New Order Single 전송: {}", clientId, describe(rawMessage));
         messageLogStore.append(clientId, FixMessageLogStore.Direction.SENT, FixMsgType.NEW_ORDER_SINGLE, toDisplay(rawMessage));
+        persistenceService.saveMessageLog(clientId, FixMessageLogStore.Direction.SENT, FixMsgType.NEW_ORDER_SINGLE, toDisplay(rawMessage));
         connection.send(rawMessage);
 
         return awaitOrTimeout(ackFuture, localOrder, timeoutMs);
@@ -102,6 +107,7 @@ public class ClientOrderService {
         FixSocketClient connection = connectionManager.getOrCreate(clientId, msg -> handleIncoming(clientId, msg));
         log.info("[{}] Order Cancel Request 전송: {}", clientId, describe(rawMessage));
         messageLogStore.append(clientId, FixMessageLogStore.Direction.SENT, FixMsgType.ORDER_CANCEL_REQUEST, toDisplay(rawMessage));
+        persistenceService.saveMessageLog(clientId, FixMessageLogStore.Direction.SENT, FixMsgType.ORDER_CANCEL_REQUEST, toDisplay(rawMessage));
         connection.send(rawMessage);
 
         return awaitCancelOrTimeout(cancelFuture, timeoutMs);
@@ -127,6 +133,7 @@ public class ClientOrderService {
     private void handleIncoming(String clientId, FixMessage message) {
         String msgType = message.getMsgType();
         messageLogStore.append(clientId, FixMessageLogStore.Direction.RECEIVED, msgType, message.toDisplayString());
+        persistenceService.saveMessageLog(clientId, FixMessageLogStore.Direction.RECEIVED, msgType, message.toDisplayString());
         if (FixMsgType.EXECUTION_REPORT.equals(msgType)) {
             handleExecutionReport(message);
         } else if (FixMsgType.ORDER_CANCEL_REJECT.equals(msgType)) {
@@ -150,6 +157,7 @@ public class ClientOrderService {
 
         if (local != null) {
             local.syncFromServer(status, exchangeOrderId, leaves, cum, text);
+            persistenceService.saveOrderSnapshot(local);
             log.info("[{}] Execution Report 수신 (execType={}): {}", local.getSenderCompId(), execType, local);
         } else {
             log.warn("로컬에 없는 주문에 대한 Execution Report 수신: clOrdId={}", clOrdId);

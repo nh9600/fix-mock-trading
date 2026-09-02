@@ -6,6 +6,9 @@ import com.example.fixmock.client.ConnectionManager;
 import com.example.fixmock.client.FixMessageLogStore;
 import com.example.fixmock.exchange.MatchingEngine;
 import com.example.fixmock.net.FixSocketServer;
+import com.example.fixmock.persistence.FixMessageLogJpaRepository;
+import com.example.fixmock.persistence.OrderJpaRepository;
+import com.example.fixmock.persistence.TradePersistenceService;
 import com.example.fixmock.server.OrderRepository;
 import com.example.fixmock.server.ServerOrderService;
 import com.example.fixmock.session.SessionRegistry;
@@ -97,10 +100,22 @@ public class FixSystemConfig {
         return new FixMessageLogStore();
     }
 
+    /**
+     * 주문/FIX 메시지 로그를 MySQL(orders, fix_message_log 테이블)에 영구 저장하는 서비스.
+     * OrderJpaRepository, FixMessageLogJpaRepository는 Spring Data JPA가 자동으로 구현체를
+     * 만들어 등록해주는 빈이라 별도 @Bean 선언 없이 바로 주입받을 수 있다.
+     */
+    @Bean
+    public TradePersistenceService tradePersistenceService(OrderJpaRepository orderJpaRepository,
+                                                             FixMessageLogJpaRepository fixMessageLogJpaRepository) {
+        return new TradePersistenceService(orderJpaRepository, fixMessageLogJpaRepository);
+    }
+
     @Bean
     public ClientOrderService clientOrderService(ConnectionManager connectionManager,
                                                   ClientOrderStore clientOrderStore,
-                                                  FixMessageLogStore fixMessageLogStore) {
-        return new ClientOrderService(connectionManager, clientOrderStore, fixMessageLogStore);
+                                                  FixMessageLogStore fixMessageLogStore,
+                                                  TradePersistenceService tradePersistenceService) {
+        return new ClientOrderService(connectionManager, clientOrderStore, fixMessageLogStore, tradePersistenceService);
     }
 }

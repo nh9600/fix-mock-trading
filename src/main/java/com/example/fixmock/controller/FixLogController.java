@@ -29,7 +29,7 @@ public class FixLogController {
     }
 
     @GetMapping
-    public ResponseEntity<List<FixLogEntryResponse>> getMessages(@PathVariable String clientId) {
+    public ResponseEntity<List<FixLogEntryResponse>> getMessages(@PathVariable("clientId") String clientId) {
         List<FixLogEntryResponse> body = messageLogStore.get(clientId).stream()
                 .map(FixLogEntryResponse::new)
                 .toList();

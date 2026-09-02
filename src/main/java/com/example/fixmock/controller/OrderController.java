@@ -33,7 +33,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<OrderResponse> placeOrder(@PathVariable String clientId,
+    public ResponseEntity<OrderResponse> placeOrder(@PathVariable("clientId") String clientId,
                                                       @RequestBody PlaceOrderRequest request) {
         OrderSide side = OrderSide.valueOf(request.getSide().toUpperCase());
         OrderType orderType = OrderType.valueOf(request.getOrderType().toUpperCase());
@@ -46,7 +46,7 @@ public class OrderController {
 
     /** 해당 clientId(트레이더)가 낸 모든 주문을 최신 상태로 조회한다. 대시보드의 주문 목록 폴링에 사용된다. */
     @GetMapping
-    public ResponseEntity<List<OrderResponse>> listOrders(@PathVariable String clientId) {
+    public ResponseEntity<List<OrderResponse>> listOrders(@PathVariable("clientId") String clientId) {
         List<OrderResponse> body = clientOrderService.listOrders(clientId).stream()
                 .map(OrderResponse::new)
                 .toList();
@@ -54,13 +54,15 @@ public class OrderController {
     }
 
     @GetMapping("/{clientOrderId}")
-    public ResponseEntity<OrderResponse> getOrder(@PathVariable String clientId, @PathVariable String clientOrderId) {
+    public ResponseEntity<OrderResponse> getOrder(@PathVariable("clientId") String clientId,
+                                                   @PathVariable("clientOrderId") String clientOrderId) {
         Order order = clientOrderService.findOrder(clientOrderId);
         return ResponseEntity.ok(new OrderResponse(order));
     }
 
     @DeleteMapping("/{clientOrderId}")
-    public ResponseEntity<OrderResponse> cancelOrder(@PathVariable String clientId, @PathVariable String clientOrderId) {
+    public ResponseEntity<OrderResponse> cancelOrder(@PathVariable("clientId") String clientId,
+                                                      @PathVariable("clientOrderId") String clientOrderId) {
         Order order = clientOrderService.cancelOrder(clientId, clientOrderId, 2000);
         return ResponseEntity.ok(new OrderResponse(order));
     }

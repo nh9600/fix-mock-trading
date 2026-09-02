@@ -3,6 +3,7 @@ package com.example.fixmock.integration;
 import com.example.fixmock.client.ClientOrderService;
 import com.example.fixmock.client.ClientOrderStore;
 import com.example.fixmock.client.ConnectionManager;
+import com.example.fixmock.client.FixMessageLogStore;
 import com.example.fixmock.domain.Order;
 import com.example.fixmock.domain.OrderSide;
 import com.example.fixmock.domain.OrderStatus;
@@ -11,6 +12,9 @@ import com.example.fixmock.exception.CancelRejectedException;
 import com.example.fixmock.exception.OrderNotFoundException;
 import com.example.fixmock.exchange.MatchingEngine;
 import com.example.fixmock.net.FixSocketServer;
+import com.example.fixmock.persistence.FixMessageLogJpaRepository;
+import com.example.fixmock.persistence.OrderJpaRepository;
+import com.example.fixmock.persistence.TradePersistenceService;
 import com.example.fixmock.server.OrderRepository;
 import com.example.fixmock.server.ServerOrderService;
 import com.example.fixmock.session.SessionRegistry;
@@ -22,10 +26,14 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.ServerSocket;
 import java.time.Duration;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.awaitility.Awaitility.await;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * "REST Controller가 실제로 호출하는" {@link ClientOrderService} 계층을 검증하는 통합 테스트.
@@ -46,7 +54,18 @@ class ClientOrderServiceIntegrationTest {
         server.start();
 
         ConnectionManager connectionManager = new ConnectionManager("localhost", port);
-        clientOrderService = new ClientOrderService(connectionManager, new ClientOrderStore());
+
+        // 이 테스트는 DB 없이 순수 자바 객체만으로 도는 통합 테스트이므로,
+        // JPA 저장소는 Mockito로 대체하고 "항상 신규 삽입"으로만 동작하도록 최소한만 스텁한다.
+        // TradePersistenceService는 저장 실패를 내부적으로 흡수하므로, 이렇게만 해도 충분하다.
+        OrderJpaRepository orderJpaRepository = mock(OrderJpaRepository.class);
+        when(orderJpaRepository.findByClientOrderId(anyString())).thenReturn(Optional.empty());
+        FixMessageLogJpaRepository fixMessageLogJpaRepository = mock(FixMessageLogJpaRepository.class);
+        TradePersistenceService persistenceService =
+                new TradePersistenceService(orderJpaRepository, fixMessageLogJpaRepository);
+
+        clientOrderService = new ClientOrderService(
+                connectionManager, new ClientOrderStore(), new FixMessageLogStore(), persistenceService);
     }
 
     @AfterEach
