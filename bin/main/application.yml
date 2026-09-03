@@ -10,3 +10,17 @@ fix:
     port: 9878
   client:
     host: localhost
+
+spring:
+  datasource:
+    # allowPublicKeyRetrieval/useSSL 옵션은 MySQL 8 기본 인증 방식(caching_sha2_password) 때문에 필요하다.
+    url: jdbc:mysql://localhost:3306/dev?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    username: 
+    password: 
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    # 테이블은 db/schema.sql로 직접 만들었으므로 Hibernate가 스키마를 건드리지 않게 한다.
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+    show-sql: false

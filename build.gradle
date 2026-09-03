@@ -17,6 +17,9 @@ java {
 
 compileJava {
     options.encoding = 'UTF-8'
+    // @PathVariable/@RequestParam이 파라미터 이름을 리플렉션으로 읽어올 수 있게 한다.
+    // (이 옵션이 없으면 IDE에 따라 "Name for argument ... not specified" 에러가 날 수 있다.)
+    options.compilerArgs << '-parameters'
 }
 
 compileTestJava {
@@ -29,6 +32,8 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'com.mysql:mysql-connector-j'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.awaitility:awaitility:4.2.2'
